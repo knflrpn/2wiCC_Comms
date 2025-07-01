@@ -80,10 +80,13 @@ static void uart_irq_handler(void) {
 
 // Core 1: USB + bridge logic
 void core1_main() {
+
+    tusb_init();
+
     while (1) {
         tud_task();
 
-        // ---- USB to UART ----
+        // ---- Check for data USB to UART ----
         if (tud_cdc_connected()) {
             uint8_t buf[64];
             uint32_t cnt = tud_cdc_read(buf, sizeof(buf));
@@ -91,6 +94,7 @@ void core1_main() {
                 rb_put(&usb_to_uart_rb, buf[i]);
             }
         }
+
         // drain USB to UART ring buffer into UART when writable
         {
             uint8_t uc;
@@ -114,7 +118,7 @@ void core1_main() {
             tud_cdc_write_flush();
         }
 
-        sleep_ms(1);
+        sleep_us(10);
     }
 }
 
@@ -141,7 +145,7 @@ int main() {
     uart_set_irq_enables(UART_PORT, true, false);
 
     // ---- USB init & launch core 1 ----
-    tusb_init();
+    usbd_serial_init();
     multicore_launch_core1(core1_main);
 
     // Core 0: status LED  

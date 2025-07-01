@@ -58,7 +58,7 @@ static const uint8_t usbd_desc_cfg[USBD_DESC_LEN] = {
 
 };
 
-static char usbd_serial[USBD_STR_SERIAL_LEN] = "133700001337";
+static char usbd_serial[USBD_STR_SERIAL_LEN];
 
 static const char *const usbd_desc_str[] = {
 	[USBD_STR_MANUF] = "KNfLrPn",
@@ -111,10 +111,15 @@ const uint16_t *tud_descriptor_string_cb(uint8_t index, uint16_t langid)
 
 void usbd_serial_init(void)
 {
-	uint8_t id[8];
+    static const char hexchars[] = "0123456789ABCDEF";
+    uint8_t id[8];
 
-	flash_get_unique_id(id);
+    flash_get_unique_id(id);
 
-	snprintf(usbd_serial, USBD_STR_SERIAL_LEN, "%02X%02X%02X%02X%02X%02X%02X%02X",
-		 id[0], id[1], id[2], id[3], id[4], id[5], id[6], id[7]);
+    /* USBD_STR_SERIAL_LEN must be at least 17 to hold 16 hex chars + NUL */
+    for (uint8_t i = 0; i < 8; ++i) {
+        usbd_serial[2*i + 0] = hexchars[id[i] >> 4];
+        usbd_serial[2*i + 1] = hexchars[id[i] & 0x0F];
+    }
+    usbd_serial[16] = '\0';
 }
