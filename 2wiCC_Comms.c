@@ -13,7 +13,7 @@
 #define UART_IRQ_ID  UART0_IRQ
 #define UART_TX_PIN  0
 #define UART_RX_PIN  1
-#define BAUDRATE     921600
+#define BAUDRATE     460800u
 
 // ring‐buffer size
 #define RING_BUFFER_SIZE (1<<10)
