@@ -141,7 +141,7 @@ void core1_main()
 // Heartbeat
 #define HB_STEPS 32
 static const uint8_t heartbeat[HB_STEPS] = {
-	4, 0, 0, 0, 0, 0, 0, 0, 64, 4, 0, 0, 0, 0, 0, 0,
+	2, 0, 0, 0, 0, 0, 0, 0, 16, 2, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 int main()
@@ -206,11 +206,11 @@ int main()
 
 		// Look up heartbeat brightness, but only if USB is connected
 		uint8_t mount_ok = (tud_mounted() && tud_ready()) ? 1 : 0;
-		uint8_t r = heartbeat[hb_idx] * mount_ok;
+		uint8_t g = heartbeat[hb_idx] * mount_ok;
 		hb_idx = (hb_idx + 1) % HB_STEPS;
 
-		uint8_t g = tx_indicator << 2;
-		uint8_t b = rx_indicator << 4;
+		uint8_t r = tx_indicator << 2;
+		uint8_t b = rx_indicator << 3;
 		debug_pixel(urgb_u32(r, g, b));
 
 		sleep_ms(30);
